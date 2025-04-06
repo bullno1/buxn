@@ -55,7 +55,7 @@ Make sure that Android SDK & NDK are installed.
 Typically, this can be downloaded using Android Studio.
 
 The `./build` script assumes the SDK & NDK reside at the default location: `~/Android/Sdk`.
-This can be overridden by setting the environment variables: `ANDROID_SDK` and `ANDROID_NDK` respectively.
+This can be overridden by setting the environment variables: `ANDROID_HOME` and `ANDROID_NDK_ROOT` respectively.
 
 Building for Android is similarly done using: `./build <type> android`.
 It will automatically produce the `.so` binary for all supported ABIs and package them into a signed apk.

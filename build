@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 main() {
 	export BUILD_TYPE=${1:-Debug}
@@ -109,7 +109,7 @@ build_android() {
 
 	echo "Packaging..."
 
-	ANDROID_PLATFORM="$ANDROID_SDK/platforms/android-$ANDROID_API_LEVEL"
+	ANDROID_PLATFORM="$ANDROID_HOME/platforms/android-$ANDROID_API_LEVEL"
 
 	"$ANDROID_BUILD_TOOLS/aapt" package \
 		-f \
@@ -126,10 +126,11 @@ build_android() {
 
 	# TODO: release key?
 	ANDROID_KEYSTORE=~/.android/debug.keystore
-	if [ ! -f $KEYSTORE ]
+	if [ ! -f $ANDROID_KEYSTORE ]
 	then
+		mkdir -p $(dirname $ANDROID_KEYSTORE)
 		keytool -genkeypair -v \
-			-keystore $KEYSTORE \
+			-keystore $ANDROID_KEYSTORE \
 			-alias androiddebugkey \
 			-keyalg RSA \
 			-keysize 2048 \
@@ -202,8 +203,8 @@ android_get_tools() {
 			;;
 	esac
 
-	export CC=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/$ANDROID_BUILD_HOST/bin/$triplet$ANDROID_API_LEVEL-clang
-	export CXX=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/$ANDROID_BUILD_HOST/bin/$triplet$ANDROID_API_LEVEL-clang++
+	export CC=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/$ANDROID_BUILD_HOST/bin/clang
+	export CXX=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/$ANDROID_BUILD_HOST/bin/clang++
 
 	if [ ! -f $CC ] || [ ! -f $CXX ]
 	then
@@ -214,8 +215,8 @@ android_get_tools() {
 		exit 1
 	fi
 
-	Release="-fPIC -g -O3 -flto -DNDEBUG"
-	Debug="-fPIC -g -fno-omit-frame-pointer -D_DEBUG"
+	Release="--target=$triplet$ANDROID_API_LEVEL -fPIC -g -O3 -flto -DNDEBUG"
+	Debug="--target=$triplet$ANDROID_API_LEVEL -fPIC -g -fno-omit-frame-pointer -D_DEBUG"
 	eval "BUILD_TYPE_FLAGS=\${$BUILD_TYPE}"
 
 	DEV_FLAGS="-Wall -Wextra -pedantic -Werror"
@@ -225,23 +226,26 @@ android_get_tools() {
 }
 
 detect_android_sdk() {
-	ANDROID_SDK=${ANDROID_SDK:-~/Android/Sdk}
-	if [ ! -f "$ANDROID_SDK/platform-tools/adb" ]
+	ANDROID_HOME=${ANDROID_HOME:-~/Android/Sdk}
+	if [ ! -f "$ANDROID_HOME/platform-tools/adb" ]
 	then
-		echo "Android SDK not found, please set the environment variables ANDROID_SDK"
+		echo "Android SDK not found, please set the environment variables ANDROID_HOME"
 		exit 1
 	fi
-	echo "Found Android SDK at: $ANDROID_SDK"
+	echo "Found Android SDK at: $ANDROID_HOME"
 
-	ANDROID_BUILD_TOOLS=$(echo $ANDROID_SDK/build-tools/$ANDROID_API_LEVEL.* | sort -r | head -1)
+	ANDROID_BUILD_TOOLS=$(echo $ANDROID_HOME/build-tools/$ANDROID_API_LEVEL.* | sort -r | head -1)
 	echo "Using build tools at: $ANDROID_BUILD_TOOLS"
 
-	ANDROID_NDK_VERSION=${ANDROID_NDK_VERSION:-*}
-	ANDROID_NDK=${ANDROID_NDK:-$ANDROID_SDK/ndk}
-	ANDROID_NDK_ROOT=$(echo $ANDROID_NDK/$ANDROID_NDK_VERSION | sort -r | head -1)
+	if [ -z "$ANDROID_NDK_ROOT" ]
+	then
+		ANDROID_NDK_VERSION=${ANDROID_NDK_VERSION:-*}
+		ANDROID_NDK_ROOT=$(echo $ANDROID_HOME/ndk/$ANDROID_NDK_VERSION | sort -r | head -1)
+	fi
+
 	if [ ! -f "$ANDROID_NDK_ROOT/ndk-build" ]
 	then
-		echo "Android NDK not found, please set the environment variables ANDROID_NDK and ANDROID_NDK_VERSION"
+		echo "Android NDK not found, please set the environment variables ANDROID_NDK_ROOT"
 		exit 1
 	fi
 	echo "Found Android NDK at: $ANDROID_NDK_ROOT"
