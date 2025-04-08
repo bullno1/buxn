@@ -49,7 +49,7 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
       - name: Install SDK platform 26
-        run: sdkmanager --install platforms;android-26
+        run: sdkmanager --install 'platforms;android-26'
       - name: Install NDK
         id: ndk
         uses: nttld/setup-ndk@v1
