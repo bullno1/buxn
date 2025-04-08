@@ -48,6 +48,8 @@ jobs:
           distribution: 'temurin'
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+      - name: Install platform 26
+        run: sdkmanager platforms;android-26
       - name: Install NDK
         id: ndk
         uses: nttld/setup-ndk@v1
