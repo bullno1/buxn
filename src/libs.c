@@ -4,6 +4,9 @@
 #endif
 
 #define SOKOL_IMPL
+#ifdef __ANDROID__
+#	define SAUDIO_ANDROID_SLES
+#endif
 #include <sokol_app.h>
 #include <sokol_gfx.h>
 #include <sokol_glue.h>

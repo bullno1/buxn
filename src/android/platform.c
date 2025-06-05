@@ -18,7 +18,7 @@ static struct {
 	blog_android_logger_options_t log_options;
 	buxn_dbg_integration_t dbg;
 	jobject intent_uri;
-} platform_android = { 0 };
+} platform_android;
 
 typedef struct {
 	jobject asset_fd;
@@ -39,6 +39,7 @@ parcel_read(void* handle, void* buffer, uint64_t num_bytes) {
 void
 platform_init(args_t* args) {
 	(void)args;  // No op
+	memset(&platform_android, 0, sizeof(platform_android));
 
 	ANativeActivity* activity = (ANativeActivity*)sapp_android_get_native_activity();
 	ANativeActivity_setWindowFlags(activity, AWINDOW_FLAG_FULLSCREEN, 0);

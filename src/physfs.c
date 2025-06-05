@@ -9,7 +9,7 @@ typedef struct physfs_dir_buf_t {
 	char** current;
 } physfs_dir_buf_t;
 
-static physfs_dir_buf_t dir_buf[BUXN_NUM_FILE_DEVICES] = { 0 };
+static physfs_dir_buf_t dir_buf[BUXN_NUM_FILE_DEVICES] = { [0] = { .files = NULL } };
 
 static inline buxn_file_handle_t*
 buxn_file_log_open_error(const char* path, PHYSFS_file* file) {

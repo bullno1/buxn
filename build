@@ -128,7 +128,7 @@ build_linux() {
 build_android() {
 	# TODO: Drop this as low as possible
 	ANDROID_BUILD_TOOLS_VERSION=${ANDROID_BUILD_TOOLS_VERSION:-34.*}
-	ANDROID_API_LEVEL=${ANDROID_API_LEVEL:-26}
+	ANDROID_API_LEVEL=${ANDROID_API_LEVEL:-18}
 	detect_android_sdk
 
 	ANDROID_BUILD_HOST=${ANDROID_BUILD_HOST:-linux-x86_64}
@@ -223,7 +223,7 @@ android_link_for() {
 	android_get_tools $1
 
 	echo $CC \
-		-lm -landroid -lEGL -lGLESv3 -laaudio -llog \
+		-lm -landroid -lEGL -lGLESv3 -lOpenSLES -llog \
 		-Wl,--no-undefined \
 		-Wl,--version-script,src/android/libbuxn.map.txt \
 		${BUILD_TYPE_FLAGS} \
