@@ -1,0 +1,55 @@
+@@
+
+(device )
+|00 @System/vector $2 &expansion $2 &wst $1 &rst $1 &metadata $2 &r $2 &g $2 &b $2 &debug $1 &state $1
+
+(enum )
+|00 @System-expansion-op
+	&fill $1
+	&cpyl $1
+	&cpyr $1
+
+|@
+
+@System/cpyr ( length* src-bank* src-addr* dst-bank* dst-addr* -- )
+	.System-expansion-op/cpyr
+	!System-expansion-cpy
+
+&System/cpyl ( length* src-bank* src-addr* dst-bank* dst-addr* -- )
+	.System-expansion-op/cpyl
+
+@System-expansion-cpy ( length* src-bank* src-addr* dst-bank* dst-addr* op -- )
+	,/op STR
+	,/dst-addr STR2
+	,/dst-bank STR2
+	,/src-addr STR2
+	,/src-bank STR2
+	,/length STR2
+	;/op .System/expansion DEO2
+	JMP2r
+	(command )
+	&op $1
+	&length $2
+	&src-bank $2
+	&src-addr $2
+	&dst-bank $2
+	&dst-addr $2
+
+@System-expansion-fill ( length* bank* [addr]* value -- )
+	,/value STR
+	,/addr STR2
+	,/bank STR2
+	,/length STR2
+	;/op .System/expansion DEO2
+	JMP2r
+	(command )
+	&op -System-expansion-op/fill
+	&length $2
+	&bank $2
+	&addr $2
+	&value $1
+
+00
+( Because padding does not generate any signal to the frontend,
+  it is not possible to find out how big the final padding is.
+  So we write 0 at the end of the rom. )
