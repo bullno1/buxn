@@ -102,3 +102,25 @@ jobs:
           PLATFORM: cosmo
         run: |
           ./test
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Install MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+          sdk: 10.0.22621.0
+          vsversion: 2022
+      - name: Generate project
+        run: .\msvc.bat
+      - name: Build
+        run: |
+          cd msvc
+          msbuild buxn.sln /property:Configuration=Debug /property:Platform=x64
+      - name: Test
+        run: |
+          .\bin\Debug\buxn-tests.exe
