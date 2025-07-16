@@ -14,15 +14,40 @@
 		vm->rsp = rsp; \
 	} while (0)
 
+#if defined(__GNUC__) || defined(__clang__)
+// Dispatch using computed goto
+
 #define BUXN_OPCODE_DISPATCH_TABLE_ENTRY(NAME, VALUE) [VALUE] = &&NAME,
 
-// This exists so that the file get proper error reporting
-#ifndef BUXN_NEXT_OPCODE
+#define BUXN_BEGIN_DISPATCH() \
+	static const void* dispatch_table[256] = { \
+		BUXN_OPCODE_DISPATCH(BUXN_OPCODE_DISPATCH_TABLE_ENTRY) \
+	}; \
+	{ \
+		BUXN_NEXT_OPCODE();
+#define BUXN_END_DISPATCH() }
 #define BUXN_NEXT_OPCODE() \
 	do { \
+		BUXN_VM_HOOK() \
 		uint8_t opcode = mem[pc++]; \
 		goto *dispatch_table[opcode]; \
 	} while (0)
+
+#else
+// Dispatch using switched goto
+
+#define BUXN_BEGIN_DISPATCH() { BUXN_NEXT_OPCODE();
+#define BUXN_END_DISPATCH() }
+#define BUXN_NEXT_OPCODE() \
+	do { \
+		BUXN_VM_HOOK() \
+		uint8_t opcode = mem[pc++]; \
+		switch (opcode) { \
+			BUXN_OPCODE_DISPATCH(BUXN_OPCODE_DISPATCH_TABLE_ENTRY) \
+		} \
+	} while (0)
+#define BUXN_OPCODE_DISPATCH_TABLE_ENTRY(NAME, VALUE) case VALUE: goto NAME;
+
 #endif
 
 #define BUXN_SELECT(WHICH, LEFT, RIGHT) BUXN_CONCAT(BUXN_SELECT_, WHICH)(LEFT, RIGHT)
@@ -118,7 +143,7 @@
 	(((uint16_t)BUXN_UOP_LOAD1_GEN(SRC, ADDR    , ADDR_MASK) << 8) \
 	|((uint16_t)BUXN_UOP_LOAD1_GEN(SRC, ADDR + 1, ADDR_MASK)     ))
 #define BUXN_UOP_STORE1_GEN(DST, ADDR, ADDR_MASK, VALUE) \
-	DST[(ADDR) & ADDR_MASK] = VALUE
+	DST[(ADDR) & ADDR_MASK] = (uint8_t)VALUE
 #define BUXN_UOP_STORE2_GEN(DST, ADDR, ADDR_MASK, VALUE) \
 	do { \
 		BUXN_UOP_STORE1_GEN(DST, ADDR    , ADDR_MASK, (uint8_t)((VALUE >> 8) & 0xff)); \
@@ -127,7 +152,7 @@
 
 // Device I/O
 #define BUXN_POLY_DEV_IN(S_) BUXN_SELECT(S_, BUXN_UOP_DEV_IN1, BUXN_UOP_DEV_IN2)
-#define BUXN_UOP_DEV_IN1(ADDR) buxn_vm_dei(vm, ADDR)
+#define BUXN_UOP_DEV_IN1(ADDR) buxn_vm_dei(vm, (uint8_t)ADDR)
 #define BUXN_UOP_DEV_IN2(ADDR) \
 	((uint16_t)(BUXN_UOP_DEV_IN1(ADDR    ) << 8) \
 	|(uint16_t)(BUXN_UOP_DEV_IN1(ADDR + 1)     ))
@@ -135,15 +160,15 @@
 #define BUXN_POLY_DEV_OUT(S_) BUXN_SELECT(S_, BUXN_UOP_DEV_OUT1, BUXN_UOP_DEV_OUT2)
 #define BUXN_UOP_DEV_OUT1(ADDR, VALUE) \
 	do { \
-		dev[(ADDR) & 0xff] = VALUE; \
-		buxn_vm_deo(vm, ADDR); \
+		dev[(ADDR) & 0xff] = (uint8_t)VALUE; \
+		buxn_vm_deo(vm, (uint8_t)ADDR); \
 	} while (0)
 #define BUXN_UOP_DEV_OUT2(ADDR, VALUE) \
 	do { \
 		dev[(ADDR    ) & 0xff] = (uint8_t)(VALUE >> 8); \
 		dev[(ADDR + 1) & 0xff] = (uint8_t)VALUE; \
-		buxn_vm_deo(vm, ADDR); \
-		buxn_vm_deo(vm, ADDR + 1); \
+		buxn_vm_deo(vm, (uint8_t)ADDR); \
+		buxn_vm_deo(vm, (uint8_t)(ADDR + 1)); \
 	} while (0)
 
 // Polymorphic opcodes parameterized over polymorphic uops
@@ -393,11 +418,8 @@ BUXN_WARNING_PUSH()
 #endif
 
 static void
-buxn_vm_execute_internal(buxn_vm_t* vm, uint16_t pc, const buxn_vm_hook_t hook) {
+BUXN_VM_EXECUTE(buxn_vm_t* vm, uint16_t pc, const buxn_vm_hook_t hook) {
 	(void)hook;
-	static const void* dispatch_table[256] = {
-		BUXN_OPCODE_DISPATCH(BUXN_OPCODE_DISPATCH_TABLE_ENTRY)
-	};
 
 	uint8_t* restrict const ws = vm->ws;
 	uint8_t* restrict const rs = vm->rs;
@@ -408,8 +430,7 @@ buxn_vm_execute_internal(buxn_vm_t* vm, uint16_t pc, const buxn_vm_hook_t hook) 
 	uint16_t a, b, c;  // Temporary variables following stack notation
 	BUXN_LOAD_STATE();
 
-	while (true) {
-		BUXN_NEXT_OPCODE();
+	BUXN_BEGIN_DISPATCH()
 
 		BUXN_IMPL_MONO_OPCODE(BRK, { BUXN_SAVE_STATE(); return; })
 		BUXN_IMPL_POLY_OPCODE(INC)
@@ -485,7 +506,8 @@ buxn_vm_execute_internal(buxn_vm_t* vm, uint16_t pc, const buxn_vm_hook_t hook) 
 			pc += 2;
 			BUXN_UOP_PUSH2R(a);
 		})
-	}
+
+	BUXN_END_DISPATCH()
 }
 
 BUXN_WARNING_POP()

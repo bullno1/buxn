@@ -4,15 +4,15 @@
 uint8_t
 buxn_mouse_dei(struct buxn_vm_s* vm, buxn_mouse_t* device, uint8_t address) {
 	switch (address) {
-		case 0x92: return device->x >> 8;
-		case 0x93: return device->x;
-		case 0x94: return device->y >> 8;
-		case 0x95: return device->y;
-		case 0x96: return device->state;
-		case 0x9a: return (uint16_t)device->scroll_x >> 8;
-		case 0x9b: return (uint16_t)device->scroll_x;
-		case 0x9c: return (uint16_t)device->scroll_y >> 8;
-		case 0x9d: return (uint16_t)device->scroll_y;
+		case 0x92: return (uint8_t)(device->x >> 8);
+		case 0x93: return (uint8_t)device->x;
+		case 0x94: return (uint8_t)(device->y >> 8);
+		case 0x95: return (uint8_t)device->y;
+		case 0x96: return (uint8_t)device->state;
+		case 0x9a: return (uint8_t)(device->scroll_x >> 8);
+		case 0x9b: return (uint8_t)device->scroll_x;
+		case 0x9c: return (uint8_t)(device->scroll_y >> 8);
+		case 0x9d: return (uint8_t)device->scroll_y;
 		default: return vm->device[address];
 	}
 }

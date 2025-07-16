@@ -676,7 +676,7 @@ main(int argc, const char* argv[]) {
 			buxn_dbg_symtab_io_status_t status = buxn_dbg_write_symtab(
 				writer,
 				&(buxn_dbg_symtab_t){
-					.num_symbols = barray_len(ctx.debug_symbols),
+					.num_symbols = (uint32_t)barray_len(ctx.debug_symbols),
 					.symbols = ctx.debug_symbols,
 				}
 			);

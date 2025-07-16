@@ -102,7 +102,7 @@ buxn_file_dei(struct buxn_vm_s* vm, buxn_file_t* device, uint8_t* mem, uint8_t p
 	(void)vm;
 	switch (port) {
 		case 0x02: return device->success >> 8;
-		case 0x03: return device->success;
+		case 0x03: return (uint8_t)device->success;
 		default: return mem[port];
 	}
 }

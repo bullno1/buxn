@@ -22,7 +22,7 @@ bool
 	basm->vfs = (buxn_vfs_entry_t[]) {
 		{
 			.name = filename,
-			.content = { .data = (const unsigned char*)str, .size = strlen(str) }
+			.content = { .data = (const unsigned char*)str, .size = (unsigned int)strlen(str) }
 		},
 		{ 0 },
 	};

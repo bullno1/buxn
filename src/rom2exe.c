@@ -23,7 +23,7 @@ get_arg(const char* arg, const char* prefix) {
 static inline char*
 find_relative_path(const char* exe_path, char* file) {
 	int slash_pos;
-	for (slash_pos = strlen(exe_path) - 1; slash_pos >= 0; --slash_pos) {
+	for (slash_pos = (int)strlen(exe_path) - 1; slash_pos >= 0; --slash_pos) {
 		if (exe_path[slash_pos] == '/' || exe_path[slash_pos] == '\\') {
 			break;
 		}

@@ -85,7 +85,7 @@ buxn_repl_str_width(
 		);
 		if (num_bytes < 0) { break; }
 		width += utf8proc_charwidth(codepoint);
-		offset += num_bytes;
+		offset += (int)num_bytes;
 	}
 	return width;
 }
@@ -106,9 +106,9 @@ buxn_repl_print_stack(
 			int min_size = (value.semantics & BUXN_CHESS_SEM_SIZE_SHORT) == 0
 				? 2
 				: 4;
-			buxn_chess_str_t name = buxn_chess_format_value(chess, &value);
-			int name_width = (int)buxn_repl_str_width(name.chars, name.len);
-			fprintf(stderr, "|%*.*s", (int)min_size, name.len, name.chars);
+			buxn_chess_str_t value_name = buxn_chess_format_value(chess, &value);
+			int name_width = (int)buxn_repl_str_width(value_name.chars, value_name.len);
+			fprintf(stderr, "|%*.*s", (int)min_size, value_name.len, value_name.chars);
 			widths[i] = name_width >= min_size ? name_width : min_size;
 		}
 		fprintf(stderr, "|\n");

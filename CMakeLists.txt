@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(bio)
+project(buxn)
 
 # Fix output dir
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR})
@@ -13,6 +13,8 @@ if (IPO_SUPPORTED AND (NOT RELOADABLE))
 	set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
 endif ()
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 # Add deps first
 add_subdirectory(deps)
 
@@ -22,10 +24,11 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_EXTENSIONS OFF)
 
 if (MSVC)
-	add_compile_options(/W4 /WX)
+	add_compile_options(/W3 /WX)
 	add_compile_options(/wd4200) # Flexible array member is a standard feature since C99
 	add_compile_options(/wd4324) # _Alignof is intentional
 	add_compile_options(/wd4100) # Unreferenced parameter
+	add_compile_options(/wd4459) # Hiding global definition
 	add_compile_options(/experimental:c11atomics)  # Atomics
 	add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 

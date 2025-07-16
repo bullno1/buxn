@@ -177,8 +177,8 @@ apply_metadata(buxn_metadata_t metadata) {
 				palette[2] = 0xff000000;
 				palette[3] = 0xffffffff;
 
-				for (int i = 0; i < (int)sizeof(paletted_icon); ++i) {
-					rendered_icon[i] = palette[paletted_icon[i]];
+				for (int j = 0; j < (int)sizeof(paletted_icon); ++j) {
+					rendered_icon[j] = palette[paletted_icon[j]];
 				}
 
 				sapp_set_icon(&(sapp_icon_desc){
@@ -459,7 +459,7 @@ void
 buxn_audio_send(buxn_vm_t* vm, const buxn_audio_message_t* message) {
 	(void)vm;
 	// Write the message into the staging buffer
-	int device_index = message->device - app.devices.audio;
+	int device_index = (int)(message->device - app.devices.audio);
 	buxn_audio_message_t* outgoing_audio = (void*)app.outgoing_audio_ptr;
 	outgoing_audio[device_index] = *message;
 	app.should_submit_audio = true;
@@ -528,8 +528,8 @@ init(void) {
 	float x_scale = sapp_widthf() / (float)DEFAULT_WIDTH;
 	float y_scale = sapp_heightf() / (float)DEFAULT_HEIGHT;
 	float draw_scale = floorf(x_scale > y_scale ? x_scale : y_scale);
-	int width = sapp_widthf() / draw_scale;
-	int height = sapp_heightf() / draw_scale;
+	int width = (int)(sapp_widthf() / draw_scale);
+	int height = (int)(sapp_heightf() / draw_scale);
 
 	BLOG_INFO("DPI scale: %f", sapp_dpi_scale());
 	BLOG_INFO("Default scale: %f", draw_scale);

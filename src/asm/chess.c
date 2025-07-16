@@ -391,7 +391,7 @@ buxn_chess_name_from_symbol(
 		return (buxn_chess_str_t){
 			// symbol names are interned so they can just be quoted
 			.chars = sym->name,
-			.len = strlen(sym->name),
+			.len = (uint8_t)strlen(sym->name),
 		};
 	} else {
 		return buxn_chess_printf(chess, "load@0x%04x", value);
@@ -1482,7 +1482,7 @@ buxn_chess_DEO(buxn_chess_exec_ctx_t* ctx) {
 				ctx->entry->trace_id,
 				&state,
 				(uint8_t)(value.value >> 8),
-				addr.value
+				(uint8_t)addr.value
 			);
 			buxn_chess_deo(
 				ctx->chess->ctx,
@@ -1497,7 +1497,7 @@ buxn_chess_DEO(buxn_chess_exec_ctx_t* ctx) {
 				ctx->entry->trace_id,
 				&state,
 				(uint8_t)(value.value & 0xff),
-				addr.value
+				(uint8_t)addr.value
 			);
 		}
 	}
@@ -1716,7 +1716,7 @@ buxn_chess_make_lit_byte(
 			value.semantics |= BUXN_CHESS_SEM_NOMINAL;
 			value.type = (buxn_chess_str_t){
 				.chars = symbol->name,
-				.len = strlen(symbol->name),
+				.len = (uint8_t)strlen(symbol->name),
 			};
 		}
 	} else {
@@ -2089,7 +2089,7 @@ buxn_chess_parse_value(buxn_chess_t* chess, const buxn_asm_sym_t* sym, size_t le
 	buxn_chess_value_t value = { .region = sym->region };
 	buxn_chess_str_t name = {
 		.chars = sym->name,
-		.len = len,
+		.len = (uint8_t)len,
 	};
 	if (name.chars[name.len - 1] == '*') {
 		value.semantics |= BUXN_CHESS_SEM_SIZE_SHORT;
@@ -2607,7 +2607,7 @@ buxn_chess_handle_symbol(
 		buxn_chess_addr_info_t* addr_info = buxn_chess_ensure_addr_info(chess, addr);
 		addr_info->value.name = (buxn_chess_str_t){
 			.chars = chess->current_symbol.name,
-			.len = strlen(chess->current_symbol.name),
+			.len = (uint8_t)strlen(chess->current_symbol.name),
 		};
 		addr_info->value.region = sym->region;
 	} else if (

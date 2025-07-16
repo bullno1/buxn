@@ -14,7 +14,7 @@ buxn_metadata_parse_internal(uint8_t* addr, uint8_t* max_addr) {
 		if (*addr == 0) { break; }
 		++addr;
 	}
-	int content_len = (char*)addr - content;
+	int content_len = (int)((char*)addr - content);
 
 	uint8_t* extension_address = NULL;
 	uint8_t num_extensions = 0;

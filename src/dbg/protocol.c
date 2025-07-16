@@ -29,12 +29,16 @@ buxn_dbg_protocol_msg_body(
 			BSERIAL_CHECK_STATUS(bserial_any_int(ctx, &msg->brkp_id));
 			break;
 		case BUXN_DBG_MSG_COMMAND_REQ:
-		case BUXN_DBG_MSG_COMMAND_REP:
-			BSERIAL_CHECK_STATUS(bserial_any_int(ctx, &msg->cmd.type));
-			switch (msg->cmd.type) {
+		case BUXN_DBG_MSG_COMMAND_REP: {
+			uint8_t cmd_type = msg->cmd.type;
+			BSERIAL_CHECK_STATUS(bserial_any_int(ctx, &cmd_type));
+			msg->cmd.type = cmd_type;
+			switch (cmd_type) {
 				case BUXN_DBG_CMD_INFO:
 					if (type == BUXN_DBG_MSG_COMMAND_REQ) {
-						BSERIAL_CHECK_STATUS(bserial_any_int(ctx, &msg->cmd.info.type));
+						uint8_t info_type = msg->cmd.info.type;
+						BSERIAL_CHECK_STATUS(bserial_any_int(ctx, &info_type));
+						msg->cmd.info.type = info_type;
 
 						if (bserial_mode(ctx) == BSERIAL_MODE_READ) {
 							switch (msg->cmd.info.type) {
@@ -200,7 +204,7 @@ buxn_dbg_protocol_msg_body(
 				case BUXN_DBG_CMD_STEP_OVER:
 					break;
 			}
-			break;
+		} break;
 		case BUXN_DBG_MSG_END_EXEC:
 		case BUXN_DBG_MSG_END_BREAK:
 		case BUXN_DBG_MSG_PAUSED:

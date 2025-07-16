@@ -3,7 +3,13 @@
 #pragma clang diagnostic ignored "-Wextra-semi"
 #endif
 
+#if defined(__linux__)
 #define _XOPEN_SOURCE 700
+#elif defined(_WIN32)
+#	if !defined(NDEBUG)
+#		define SOKOL_WIN32_FORCE_MAIN
+#	endif
+#endif
 
 #define SOKOL_IMPL
 #include <sokol_app.h>

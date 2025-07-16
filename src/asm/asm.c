@@ -1613,7 +1613,7 @@ buxn_asm_make_lambda_name(buxn_asm_t* basm, uint16_t lambda_id) {
 	*name_ptr = '\0';
 	return buxn_asm_strintern( basm, (buxn_asm_str_t){
 		.chars = lambda_name,
-		.len = name_ptr - lambda_name,
+		.len = (int)(name_ptr - lambda_name),
 	});
 }
 
@@ -1832,7 +1832,7 @@ buxn_asm_process_lit_number(buxn_asm_t* basm, const buxn_asm_token_t* start) {
 
 	if (num_bytes == 1) {
 		if (!buxn_asm_emit_opcode(basm, start, 0x80, true)) { return false; }  // LIT
-		if (!buxn_asm_emit_byte(basm, start, number, true)) { return false; }
+		if (!buxn_asm_emit_byte(basm, start, (uint8_t)number, true)) { return false; }
 	} else {
 		if (!buxn_asm_emit_opcode(basm, start, 0xa0, true)) { return false; }  // LIT2
 		if (!buxn_asm_emit_short(basm, start, number, true)) { return false; }
@@ -1860,7 +1860,7 @@ buxn_asm_process_raw_number(buxn_asm_t* basm, const buxn_asm_token_t* token) {
 	}
 
 	if (num_bytes == 1) {
-		if (!buxn_asm_emit_byte(basm, token, number, false)) { return false; }
+		if (!buxn_asm_emit_byte(basm, token, (uint8_t)number, false)) { return false; }
 	} else {
 		if (!buxn_asm_emit_short(basm, token, number, false)) { return false; }
 	}
@@ -2285,7 +2285,7 @@ buxn_asm(buxn_asm_ctx_t* ctx, const char* filename) {
 
 	const buxn_asm_pstr_t* interned_name = buxn_asm_strintern(
 		&basm,
-		(buxn_asm_str_t){.chars = filename, .len = strlen(filename) }
+		(buxn_asm_str_t){.chars = filename, .len = (int)strlen(filename) }
 	);
 	if (!buxn_asm_process_file(&basm, interned_name)) {
 		return basm.success;

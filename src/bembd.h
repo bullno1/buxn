@@ -40,7 +40,7 @@ bembd_write_header(FILE* container, uint32_t embed_size) {
 
 static inline uint32_t
 bembd_put(FILE* container, FILE* file) {
-	uint32_t embed_size = bembd_cp(container, file);
+	uint32_t embed_size = (uint32_t)bembd_cp(container, file);
 	if (embed_size == 0) { return embed_size; }
 
 	return bembd_write_header(container, embed_size);

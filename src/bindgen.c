@@ -324,7 +324,7 @@ split_label_name(const char* name, str_t* scope, str_t* local_name) {
 		scope->chars = name;
 		scope->len = (int)(slash - name);
 		local_name->chars = slash + 1;
-		local_name->len = strlen(slash + 1);
+		local_name->len = (int)strlen(slash + 1);
 	}
 }
 

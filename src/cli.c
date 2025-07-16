@@ -4,7 +4,9 @@
 #include <physfs.h>
 #include <errno.h>
 #include <buxn/vm/vm.h>
+#ifndef _WIN32
 #include "dbg.h"
+#endif
 #include "bembd.h"
 #include <buxn/devices/console.h>
 #include <buxn/devices/system.h>
@@ -119,6 +121,7 @@ boot(int argc, const char* argv[], FILE* rom_file, uint32_t rom_size) {
 	};
 	buxn_vm_reset(vm, BUXN_VM_RESET_ALL);
 
+#ifndef _WIN32
 	buxn_dbg_integration_t dbg = { 0 };
 	{
 		const char* debug_fd_env = getenv("BUXN_DBG_FD");
@@ -130,6 +133,7 @@ boot(int argc, const char* argv[], FILE* rom_file, uint32_t rom_size) {
 			}
 		}
 	}
+#endif
 
 	// Read rom
 	{
@@ -175,7 +179,9 @@ boot(int argc, const char* argv[], FILE* rom_file, uint32_t rom_size) {
 	if (exit_code < 0) { exit_code = 0; }
 end:
 	free(vm);
+#ifndef _WIN32
 	buxn_dbg_integration_cleanup(&dbg);
+#endif
 
 	PHYSFS_deinit();
 	return exit_code;

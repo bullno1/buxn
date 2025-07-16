@@ -43,22 +43,13 @@ buxn_vm_execute(buxn_vm_t* vm, uint16_t pc) {
 	}
 }
 
-#define BUXN_NEXT_OPCODE() \
-	do { \
-		uint8_t opcode = mem[pc++]; \
-		goto *dispatch_table[opcode]; \
-	} while (0)
-#define buxn_vm_execute_internal buxn_vm_execute_without_hook
+#define BUXN_VM_HOOK()
+#define BUXN_VM_EXECUTE buxn_vm_execute_without_hook
 #include "exec.h"
 
-#undef BUXN_NEXT_OPCODE
-#undef buxn_vm_execute_internal
-#define BUXN_NEXT_OPCODE() \
-	do { \
-		BUXN_SAVE_STATE(); \
-		hook.fn(vm, pc, hook.userdata); \
-		uint8_t opcode = mem[pc++]; \
-		goto *dispatch_table[opcode]; \
-	} while (0)
-#define buxn_vm_execute_internal buxn_vm_execute_with_hook
+#undef BUXN_VM_HOOK
+#undef BUXN_VM_EXECUTE
+
+#define BUXN_VM_EXECUTE buxn_vm_execute_with_hook
+#define BUXN_VM_HOOK() BUXN_SAVE_STATE(); hook.fn(vm, pc, hook.userdata);
 #include "exec.h"

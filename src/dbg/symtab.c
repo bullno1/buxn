@@ -42,7 +42,7 @@ static const bserial_ctx_config_t buxn_dbg_symtab_bserial_config = {
 static int32_t
 buxn_msi(uint64_t hash, int exp, int32_t idx) {
 	uint32_t mask = ((uint32_t)1 << exp) - 1;
-	uint32_t step = (hash >> (64 - exp)) | 1;
+	uint32_t step = (uint32_t)((hash >> (64 - exp)) | 1);
 	return (idx + step) & mask;
 }
 
@@ -234,7 +234,9 @@ buxn_dbg_serialize_symtab_body(
 
 				BSERIAL_RECORD(ctx, symbol) {
 					BSERIAL_KEY(ctx, type) {
-						BSERIAL_CHECK_STATUS(bserial_any_int(ctx, &symbol->type));
+						uint8_t sym_type = symbol->type;
+						BSERIAL_CHECK_STATUS(bserial_any_int(ctx, &sym_type));
+						symbol->type = sym_type;
 					}
 
 					BSERIAL_KEY(ctx, id) {
@@ -334,7 +336,7 @@ buxn_dbg_write_symtab(buxn_dbg_symtab_writer_t* writer, const buxn_dbg_symtab_t*
 			hash_index = buxn_msi(hash, writer->strpool.exp, hash_index);
 			if (writer->strpool.strings[hash_index] == NULL) {
 				writer->strpool.strings[hash_index] = filename;
-				strpool_size += strlen(filename) + 1;
+				strpool_size += (uint32_t)strlen(filename) + 1;
 				break;
 			} else if (writer->strpool.strings[hash_index] == filename) {
 				break;

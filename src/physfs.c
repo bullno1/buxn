@@ -55,7 +55,7 @@ buxn_file_fread(struct buxn_vm_s* vm, buxn_file_handle_t* handle, void* buffer, 
 	if (PHYSFS_eof(handle)) { return 0; }
 
 	PHYSFS_sint64 bytes_read = PHYSFS_readBytes(handle, buffer, size);
-	return bytes_read >= 0 ? bytes_read : 0;
+	return bytes_read >= 0 ? (uint16_t)bytes_read : 0;
 }
 
 uint16_t
@@ -63,7 +63,7 @@ buxn_file_fwrite(struct buxn_vm_s* vm, buxn_file_handle_t* handle, const void* b
 	(void)vm;
 
 	PHYSFS_sint64 bytes_written = PHYSFS_writeBytes(handle, buffer, size);
-	return bytes_written >= 0 ? bytes_written : 0;
+	return bytes_written >= 0 ? (uint16_t)bytes_written : 0;
 }
 
 buxn_file_handle_t*
