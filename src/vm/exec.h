@@ -14,6 +14,11 @@
 		vm->rsp = rsp; \
 	} while (0)
 
+// This is to make clangd stop complaining
+#ifndef BUXN_VM_HOOK
+#define BUXN_VM_HOOK()
+#endif
+
 #if defined(__GNUC__) || defined(__clang__)
 // Dispatch using computed goto
 
@@ -417,6 +422,9 @@ BUXN_WARNING_PUSH()
 #pragma GCC diagnostic ignored "-Wunused-value"
 #endif
 
+#if defined(__clang__) || defined(__GNUC__)
+__attribute__((unused))
+#endif
 static void
 BUXN_VM_EXECUTE(buxn_vm_t* vm, uint16_t pc, const buxn_vm_hook_t hook) {
 	(void)hook;
