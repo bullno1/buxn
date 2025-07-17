@@ -11,15 +11,13 @@ A map of the project is needed:
     To be used along side [buxn-dbg](https://github.com/bullno1/buxn-dbg).
   * [devices](./devices.md): Varvara implementation
 * Frontend programs:
+  * [asm](./asm-frontend.md): The assembler frontend
   * [cli](./cli.md): Terminal version of the emulator
   * [gui](./gui.md): GUI version of the emulator
   * [rom2exe](./rom2exe.md): Create a standalone executable from a ROM
-  * [asm](./asm-frontend.md): The assembler frontend
   * [romviz](./romviz.md): ROM visualization tool
   * [repl](./repl.md): Example of a REPL
   * [bindgen](./bindgen.md): Binding generator
-* Miscellaneous:
-  * [metadata](./metadata.md): Metadata reading library
 
 ## On link-time polymorphism
 

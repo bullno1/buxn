@@ -39,3 +39,11 @@ The drawbacks are:
 * Latency: Since submission is asynchronous, there can be a delay between writing to the audio port and when the sound is heard.
   In practice, this does not seem noticeable.
 * Omission: Since submission is buffered, when sample B is written shortly after sample A *to the same audio device*, it is possible that no part of sample A is heard at all.
+
+## File
+
+At the emulator level, the filesystem access is virtualized using [PhysFS](https://github.com/icculus/physfs).
+
+The root of the file system is the same directory as the executable.
+
+On Android, PhysFS also allows reading of the files embedded in the [assets](../src/android/apk/assets/README.md) directory.
