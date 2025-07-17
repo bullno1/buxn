@@ -4,16 +4,17 @@ buxn has evolved from being just an emulator implementation to a suite of tools 
 I have also started using uxntal as an embedded scripting language and developed other supporting tools such as a [language server](https://github.com/bullno1/buxn-ls) or a [step debugger](https://github.com/bullno1/buxn-dbg).
 A map of the project is needed:
 
-* Core components:
+* Core libraries:
   * [asm](./asm.md): The uxntal assembler
   * [vm](./vm.md): The uxn virtual machine
-  * [dbg](./dbg.md): Debugging support
+  * [dbg](./dbg.md): Debugging support.
+    To be used along side [buxn-dbg](https://github.com/bullno1/buxn-dbg).
   * [devices](./devices.md): Varvara implementation
 * Frontend programs:
   * [cli](./cli.md): Terminal version of the emulator
   * [gui](./gui.md): GUI version of the emulator
   * [rom2exe](./rom2exe.md): Create a standalone executable from a ROM
-  * [asm](./asm-frontend.md): The frontend of the assembler
+  * [asm](./asm-frontend.md): The assembler frontend
   * [romviz](./romviz.md): ROM visualization tool
   * [repl](./repl.md): Example of a REPL
   * [bindgen](./bindgen.md): Binding generator

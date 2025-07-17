@@ -7,7 +7,7 @@
 
 \> be uxn
 
-This projects contain:
+This project contains:
 
 * An implementation of the [uxn virtual machine](https://wiki.xxiivv.com/site/uxn.html).
 * The [varvara system](https://wiki.xxiivv.com/site/varvara.html).
@@ -95,6 +95,6 @@ Use `./build <Release|Debug> cosmo` to build like other platform.
 A CMakeLists.txt file is provided to ease integration into other projects.
 
 However, it is simpler to just pick and choose only the relevant parts.
-Both [buxn-ls](https://github.com/bullno/buxn-ls) and [buxn-dbg](https://github.com/bullno/buxn-dbg) take this approach.
+Both [buxn-ls](https://github.com/bullno1/buxn-ls) and [buxn-dbg](https://github.com/bullno1/buxn-dbg) take this approach.
 In general, there is only a single header (.h) and a single source (.c) file for each component.
-The [detailed documentation](doc/README.md) will contain more details on each component.
+Check the [detailed documentation](doc/README.md) for more info.
