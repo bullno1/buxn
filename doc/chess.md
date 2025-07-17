@@ -290,8 +290,8 @@ However, user annotation helps in the following ways:
 * Whenever an annotated routine is called, chess will just apply the signature directly to the stack and then verify the routine's body separately later.
   This will greatly reduce verification time especially if the routine is called in many places.
 
-  Furthermore, it will also catch error much earlier: at the call site.
-  Without signature annotation, stack error will only be reported when an overflow or underflow happens, or when the reset vector terminates (`BRK`) with a non-empty stack.
+  Furthermore, it will also catch errors much earlier: at the call site.
+  Without signature annotation, stack errors will only be reported when an overflow or underflow happens, or when the reset vector terminates (`BRK`) with a non-empty stack.
 
 Thus, annotation is still recommended, especially at the "border".
 However, internal helpers or loop labels do not have to be annotated.
@@ -320,7 +320,7 @@ Using the [language server](https://github.com/bullno1/buxn-ls), this message ca
 
 ### Stack printing and macro
 
-Due to the implementation of macro, putting the above sequence into a macro will not have a desired effect:
+Due to the implementation of macro, putting the above sequence into a macro will not have the desired effect:
 
 ```
 %show-stack { #2b0e DEO }
