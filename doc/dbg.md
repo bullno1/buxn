@@ -1,4 +1,4 @@
-# dbg - Uxntal debugging support library
+# dbg - Uxntal debugging support libraries
 
 Due to its complexity, the bulk of the debugger is a different project: https://github.com/bullno1/buxn-dbg.
 However, certain facilities have to be provided within the VM to make it debuggable.
@@ -40,8 +40,8 @@ However, this does not translate well to Windows where socket has a different AP
 At its heart, the debugger integration is simple.
 It is an execution hook to be attached to the VM.
 In turn, it makes several callbacks to the host to inform it of the VM states.
-The most important one is: `buxn_dbg_next_command` where the host is supposed to return a debugger command to execute.
-The commands include: stepping, setting breakpoints, memory and stack inspection...
+The most important one is: `buxn_dbg_next_command` where the host is supposed to return a debugger command to be executed.
+The range of commands include: stepping, setting breakpoints, inspecting memory and stack...
 One of the command is "continue" which resumes execution until a breakpoint is hit.
 
 A breakpoint can have a combination of any of the following 3 bits:

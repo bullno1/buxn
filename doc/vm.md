@@ -61,7 +61,7 @@ buxn-vm does the following:
 This lets the device handling code trap the write at either address, preferably the low address since that's the one declared in the uxntal code.
 
 In practice, this makes little difference from the reference implementation.
-buxn-vm passes the official [opctest](git.sr.ht/~rabbits/uxn-utils/blob/main/cli/opctest/src/opctest.tal) and runs several ROMs without issues.
+buxn-vm passes the official [opctest](https://git.sr.ht/~rabbits/uxn-utils/blob/main/cli/opctest/src/opctest.tal) and runs several ROMs without issues.
 
 Strictly speaking, compared to the reference implementation, this sequence "leaks" the high byte to the low port, making it visible early.
 In practice, short ports work as a whole unit and different byte ports are independent so this has not caused any issues.
