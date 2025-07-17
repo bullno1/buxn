@@ -10,11 +10,12 @@ Thus, they do not affect code generation and can be ignored by the assembler.
 
 Beside checking stack annotation against implementation, it can also do the following:
 
-* Nominal typing
-* Annotation-less checking
-* Static stack printing
+* [Nominal typing](#nominal-typing)
+* [Annotation-less checking](#annotation-less-checking)
+* [Static stack printing](#stack-printing)
+* [Escape hatch](#escape-hatch): For when the checker is not smart enough
 * Detect common errors such as:
-  * Load and store using non-address values: A sign of wrong argument order
+  * [Load and store using non-address values](#address-semantics): A sign of wrong argument order
   * Load and store to code region
   * Execution of data region
   * Wrong termination type: `JMP2r` from a vector or `BRK` from a regular subroutine
@@ -153,7 +154,7 @@ That is, it must satisfy one of the following conditions:
 
 1. Be a literal constant (e.g: `#1337`)
 2. Be a literal label (e.g: `=write-addr`)
-3. Be annotated with address semantic
+3. Be annotated with address semantics
 4. Be an offset of one of the above
 
 The last condition is a special notation used in signature: `[name]`.
