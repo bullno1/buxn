@@ -33,7 +33,7 @@ They contain functions that should be called within the callbacks of the assembl
 For example, `buxn_chess_handle_symbol` should receive the arguments of `buxn_asm_put_symbol`.
 Refer to the source code of the [frontend](./asm-frontend.md), for more details.
 
-### Language extension
+### Language extensions
 
 Beside the core uxntal language, there are also several language extensions.
 
@@ -99,7 +99,7 @@ But naming things a hard problem so it should be avoided unless necessary.
 
 #### Macro with argument
 
-A macro whose name ends with `:` will take a *single* argument which is the following token.
+A macro whose name ends with `:` will take a **single** argument which is the following token.
 Within its body, the `^` character will be replaced with the argument.
 
 For example, given this macro definition:
@@ -109,7 +109,7 @@ For example, given this macro definition:
 ```
 
 The following piece of code: `as-lit-num: 03` will expand into: `#03`.
-This particular example is a rather useless macro but macro-with-argument opens the door for some simple syntactical expansion.
+This particular example is a rather useless macro but macro-with-argument opens the door for some simple syntactical extensions.
 For example:
 
 ```

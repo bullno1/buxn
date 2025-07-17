@@ -6,7 +6,7 @@ chess is a type checker for uxntal using [symbolic execution](https://en.wikiped
 
 It supports the [standard stack notation](https://wiki.xxiivv.com/site/uxntal_notation.html) and some other extensions described later.
 All annotations reside entirely in comments.
-Thus, it does not affect code generation and can be ignored by the assembler.
+Thus, they do not affect code generation and can be ignored by the assembler.
 
 Beside checking stack annotation against implementation, it can also do the following:
 
@@ -17,7 +17,7 @@ Beside checking stack annotation against implementation, it can also do the foll
   * Load and store using non-address values: A sign of wrong argument order
   * Load and store to code region
   * Execution of data region
-  * Wrong termination type: JMP2r from a vector or BRK from a regular subroutine
+  * Wrong termination type: `JMP2r` from a vector or `BRK` from a regular subroutine
   * Infinite self-recursion
 
 It is integrated into the [frontend](./asm-frontend) and enabled using `--chess`.
@@ -78,7 +78,7 @@ A generic number is simply promoted to a nominally-typed value upon return:
 
 ```
 @make-card ( Suit value -- Card )
-    #20 SFT ( use 2 bits to represent 2 suits )
+    #20 SFT ( use 2 bits to represent 4 suits )
     ORA ( Or in the suit )
     JMP2r
 ```
@@ -108,7 +108,7 @@ This syntax will be explained further below.
 
 ### Manipulating a nominally-typed value
 
-If a nominal value is modified in anyway (`INC`, `SUB`, `MUL`...), it immediately loses its nominal type:
+If a nominally-typed value is modified in anyway (`INC`, `SUB`, `MUL`...), it immediately loses its nominal type:
 
 ```
 %spade #03 make-card INC ( this is now just a byte )
@@ -116,7 +116,7 @@ suit-of ( This is now an error )
 ```
 
 The real meaning of a nominal type is user-defined and thus, chess takes the conservative approach when it comes to manipulation.
-In practice, a nominally typed value should always be manipulated using properly designed functions that accepts or return them instead of directly with low level primitives.
+In practice, a nominally-typed value should always be manipulated using properly designed functions that accept or return them instead of directly with low level primitives.
 
 ### Enumeration
 
@@ -126,12 +126,15 @@ As a special case, all labels in the zero page will be promoted to a nominally t
 |00 @Suit
     &spade $1
     &club $1
-    heart $1
-    diamond $1
+    &heart $1
+    &diamond $1
 
 |0100
+.Suit/spade #03 make-card ( 3 of spade )
+POP BRK
 
 @make-card ( Suit/ value -- card )
+    ( implementation redacted )
 ```
 
 The trailing slash just means the routine accepts any value whose type starts with `Suit/`.
@@ -182,7 +185,7 @@ There are two types of assertion: stack and signature.
 
 Stack assertion has been shown earlier in the nominal typing section.
 However, the general syntax allows asserting any number of top stack items.
-For example: ( a* Color . [addr]* ! ) asserts that:
+For example: `( a* Color . [addr]* ! )` asserts that:
 
 * The top 3 bytes of the working stack are:
   * a generic short
@@ -217,7 +220,7 @@ chess generates display name for stack items:
 * When 2 values are combined (e.g: `ADD`), their names are joined with a dot (·)
   e.g: `a b ADD` will create `a·b`
 
-Moreover, the origin of each value is tracked throughout the process so chess can report which opcode or routine which created the value.
+Moreover, the origin of each value is tracked throughout the symbolic execution so chess can report which opcode or routine created a value.
 But the generated names can become hard to read.
 This is where the user can use stack assertion to simplify the error messages.
 
@@ -244,16 +247,16 @@ The above will generate an error at: `trust-me-bro`:
 
 This can be useful for runtime generated code or highly dynamic code (e.g: indirect jump).
 
-## Macro
+### Assertion and macro
 
 Macros are inlined to the application side.
-As such, signature annotation on the macro itself has no effect and serves purely as documentation:
+As such, any annotation on the macro itself has no effect and serves purely as documentation:
 
 ```
 %SWP-POP ( a b -- b ) { SWP POP }
 ```
 
-However, annotation within the macro's body will be applied accordingly:
+However, annotations within the macro's body will be applied accordingly:
 
 ```
 %as-card { ( Card ! ) }
@@ -261,13 +264,15 @@ However, annotation within the macro's body will be applied accordingly:
 #15 as-card ( This number will now be considered to have the nominal type: Card )
 ```
 
+Thus, macros can be used to create shortcut for nominal casting or constants.
+
 ## Annotation-less checking
 
 Inherently, chess does not require any annotation at all to do arity checking.
 
 Without annotation, chess will by default, assume that the address `0x0100` is a vector with the signature: `( -> )`.
 It will perform type checking as usual against all directly reachable code.
-Zero page address will still automatically have nominal types (albeit useless without annotation).
+Zero page address will still automatically have nominal types (albeit useless without signature annotation).
 Address of labels will still have address semantic for load/store checking.
 
 Getting started examples such as "Hello World" can be immediately verified without further actions.
@@ -277,13 +282,14 @@ This is just a side effect of using symbolic execution under the hood.
 However, user annotation helps in the following ways:
 
 * User annotation can give more meaningful names to error messages.
-* Nominal can help to reduce errors.
+* Nominal type can help to reduce errors.
 * Vectors other than the reset vector cannot be discovered through symbolic execution.
   chess makes no assumption about device layout or vector signature so writes to devices (`DEO`) are largely ignored.
   The only verification done is stack effect and address semantics mentioned above.
 * Whenever an annotated routine is called, chess will just apply the signature directly to the stack and then verify the routine's body separately later.
-  This will greatly reduce verification time.
-  It will also catch error much earlier: at the call site.
+  This will greatly reduce verification time especially if the routine is called in many places.
+
+  Furthermore, it will also catch error much earlier: at the call site.
   Without signature annotation, stack error will only be reported when an overflow or underflow happens, or when the reset vector terminates (`BRK`) with a non-empty stack.
 
 Thus, annotation is still recommended, especially at the "border".
@@ -298,7 +304,7 @@ This is done by writing the special value: [2b](https://nier.fandom.com/wiki/YoR
 ```
 @test-print ( one two* -- )
     #2b0e DEO
-    JMP2r
+    JMP2r ( yes, there is also an error here )
 ```
 
 This will print:
@@ -309,7 +315,9 @@ WST(3): one two*
 RST(2): [RETURN]*
 ```
 
-Using the [language server](https://github.com/bullno1/buxn-ls), this message can be viewed directly in the editor without running the assembler.
+Using the [language server](https://github.com/bullno1/buxn-ls), this message can be viewed directly in the editor as an informational diagnostic message without running the assembler.
+
+### Stack printing and macro
 
 Due to the implementation of macro, putting the above sequence into a macro will not have a desired effect:
 
@@ -318,10 +326,10 @@ Due to the implementation of macro, putting the above sequence into a macro will
 
 @test-print ( one two* -- )
     show-stack
-    JMP2r
+    JMP2r ( yes, there is also an error here )
 ```
 
 The message will still be printed, however, it is attached to the `DEO` opcode at the macro definition site instead of the `show-stack` application site.
-Internally, a macro is a sequence of token, spliced into the token stream at the application site while still retaining the original location at the definition site.
+Internally, a macro is a sequence of tokens, spliced into the token stream at the application site while still retaining the original location at the definition site.
 This helps tools such as the debugger to be able to step through a macro's body just like with a function.
 However, the unintended effect is that location info can be unintuitive.
