@@ -109,18 +109,17 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: Install MSVC
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
-          sdk: 10.0.22621.0
-          vsversion: 2022
       - name: Generate project
         run: .\msvc.bat
       - name: Build
+        shell: cmd
         run: |
+          for /f "usebackq tokens=*" %%i in (`cmake\vswhere -latest -prerelease -property installationPath`) do (
+            set VS_DIR=%%i
+          )
+          call "%VS_DIR%\VC\Auxiliary\Build\vcvarsall.bat" x64 10.0.22621.0
           cd msvc
-          msbuild buxn.sln /property:Configuration=Debug /property:Platform=x64
+          msbuild buxn.sln /property:Configuration=RelWithDebInfo /property:Platform=x64
       - name: Test
         run: |
-          .\bin\Debug\buxn-tests.exe
+          .\bin\RelWithDebInfo\buxn-tests.exe
