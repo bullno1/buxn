@@ -208,7 +208,7 @@ main(int argc, const char* argv[]) {
 
 	exit_code = 0;
 end:
-	barray_free(NULL, ctx.tags);
+	barray_free(ctx.tags, NULL);
 	barena_reset(&ctx.arena);
 	barena_pool_cleanup(&arena_pool);
 

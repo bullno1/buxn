@@ -699,8 +699,8 @@ main(int argc, const char* argv[]) {
 		}
 	}
 
-	barray_free(NULL, ctx.line_buf);
-	barray_free(NULL, ctx.debug_symbols);
+	barray_free(ctx.line_buf, NULL);
+	barray_free(ctx.debug_symbols, NULL);
 	for (bhash_index_t i = 0; i < bhash_len(&ctx.file_table); ++i) {
 		fclose(ctx.file_table.values[i]);
 	}
